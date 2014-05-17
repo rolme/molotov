@@ -5,4 +5,8 @@ class Player
     self.game = game
   end
 
+  def to_json
+    { name: name }
+  end
+
 end

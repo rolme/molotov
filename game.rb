@@ -1,7 +1,7 @@
-require_relative 'team.rb'
-require_relative 'player.rb'
-require_relative 'mission.rb'
-require_relative 'effort.rb'
+require_relative 'team'
+require_relative 'player'
+require_relative 'mission'
+require_relative 'task'
 
 class Game
   attr_accessor :teams, :players, :missions
@@ -71,8 +71,8 @@ class Game
   end
 
 
-  def add_effort(effort)
-    current_mission.play_effort(effort)
+  def add_task(task)
+    current_mission.play_task(task)
   end
 
   def game_over?

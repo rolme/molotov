@@ -1,9 +1,9 @@
-class Effort
+class Task
   attr_reader :did_pass, :player
 
-  def initialize(player, did_pass)
+  def initialize(player, value)
     @player = player
-    @did_pass = did_pass
+    @did_pass = !!value
   end
 
   def failed?

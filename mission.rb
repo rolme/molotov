@@ -5,6 +5,14 @@ class Mission
     @require_to_fail = require_to_fail
     @votes = []
     @operatives = []
+    @tasks = []
+  end
+
+  def to_json
+    {
+      votes: @votes.map { |vote| { vote.player.name => value }  },
+      tasks: @tasks.map(&:did_pass?)
+    }
   end
 
   def add_vote(vote)
