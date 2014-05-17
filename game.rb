@@ -9,6 +9,7 @@ class Game
   def initialize(names = [])
     @teams = [Team.new("hello"), Team.new("world")]
     @mission_sizes = [2,3,3,4,3]
+    @mission_sizes = [2]
     @players = []
     @missions = []
     names.each do |name|
@@ -26,7 +27,15 @@ class Game
   end
 
   def state
+    return game_result if game_over?
+    if current_mission.terminal_state?
+      start_mission
+    end
     current_mission.state
+  end
+
+  def game_result
+    game_won? ? "Win!" : "Loss!"
   end
 
   def find_player_by_user_id(user_id)
@@ -37,7 +46,7 @@ class Game
     current_mission.add_task(Task.new(find_player_by_user_id(user_id), value))
   end
 
-  def user_plays_vote_value( user_id, value) 
+  def user_plays_vote_value( user_id, value)
     current_mission.add_vote(Vote.new(find_player_by_user_id(user_id), value))
   end
 
@@ -94,7 +103,15 @@ class Game
   end
 
   def game_over?
-    @missions.count(:failed?) > 3 || @missions.count >= @mission_sizes.size
+    game_won? || game_failed?
+  end
+
+  def game_won?
+    @missions.count >= @mission_sizes.size
+  end
+
+  def game_failed?
+    @missions.count(:is_mission_failed?) > 3 
   end
 
   def assign_teams

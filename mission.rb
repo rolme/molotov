@@ -37,6 +37,10 @@ class Mission
     return :success
   end
 
+  def terminal_state?
+    [ :failed, :success, :aborted ].member?( state )
+  end
+
   def vote_failed?
     votes.count { |vote| vote.value == false } > ( votes.count / 2 )
   end
@@ -51,5 +55,9 @@ class Mission
 
   def is_mission_failed?
     tasks.count(&:failed?) >= require_to_fail
+  end
+
+  def played?
+    [:failed, :success].member? state
   end
 end
