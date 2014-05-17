@@ -15,16 +15,64 @@ class Game
     end
   end
 
+  def to_json
+    {
+      players: players.map(&:to_json),
+      missions: missions.map(&:to_json)
+      
+    }
+  end
+
+  def user_plays_task_value(user_id, value)
+    current_mission.add_task(Task.new(find_player_by_user_id(user_id), value))
+  end
+
+  def user_plays_vote_value( user_id, value) 
+    current_mission.add_vote(Vote.new(find_player_by_user_id(user_id), value))
+  end
+
+  def leader_adds_operative(user_id)
+    current_mission.add_operative(find_player_by_user_id(user_id))
+  end
+
+  def find_player_by_user_id(user_id)
+    #TODO
+  end
+
+  def current_mission_number
+    missions.count(&:played?) + 1
+  end
+
+  def mission_size
+    #Fix to deal with status
+    @mission_sizes[current_mission_number - 1]
+  end
+
+  def start_mission
+    missions << Mission.new( self, mission_size )
+  end
+
+  def make_mission_with_user_ids(user_ids)
+    @missions << @mission.new([])
+  end
+
+  private
+
+  def current_mission
+    @missions.last
+  end
+
   def add_team(name)
     @teams << Team.new(name)
   end
 
   def add_player(name)
-    @players << Player.new(name)
+    @players << Player.new(name, self)
   end
 
-  def play_mission(*efforts)
-    @missions << Mission.new(efforts)
+
+  def add_effort(effort)
+    current_mission.play_effort(effort)
   end
 
   def game_over?
