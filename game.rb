@@ -4,11 +4,12 @@ require_relative 'mission.rb'
 require_relative 'effort.rb'
 
 class Game
-  attr_accessor :teams, :players
+  attr_accessor :teams, :players, :missions
   def initialize(names = [])
     @teams = [Team.new("hello"), Team.new("world")]
-    @missions = []
+    @mission_sizes = [2,3,3,4,3]
     @players = []
+    @missions = []
     names.each do |name|
       add_player name
     end
@@ -20,6 +21,14 @@ class Game
 
   def add_player(name)
     @players << Player.new(name)
+  end
+
+  def play_mission(*efforts)
+    @missions << Mission.new(efforts)
+  end
+
+  def game_over?
+    @missions.count(:failed?) > 3 || @missions.count >= @mission_sizes.size
   end
 
   def assign_teams
