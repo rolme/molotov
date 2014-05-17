@@ -2,6 +2,7 @@ require_relative 'team'
 require_relative 'player'
 require_relative 'mission'
 require_relative 'task'
+require_relative 'vote'
 
 class Game
   attr_accessor :teams, :players, :missions
@@ -13,14 +14,23 @@ class Game
     names.each do |name|
       add_player name
     end
+    @leader_id = rand(players.size - 1)
+    start_mission
   end
 
   def to_json
     {
       players: players.map(&:to_json),
       missions: missions.map(&:to_json)
-      
     }
+  end
+
+  def state
+    current_mission.state
+  end
+
+  def find_player_by_user_id(user_id)
+    players.find { |player| player.name.downcase == user_id.downcase }
   end
 
   def user_plays_task_value(user_id, value)
@@ -40,20 +50,28 @@ class Game
   end
 
   def current_mission_number
+    #Fix to deal with status
     missions.count(&:played?) + 1
   end
 
   def mission_size
-    #Fix to deal with status
     @mission_sizes[current_mission_number - 1]
   end
 
   def start_mission
-    missions << Mission.new( self, mission_size )
+    increment_leader
+    missions << Mission.new( mission_size, players.count )
   end
 
-  def make_mission_with_user_ids(user_ids)
-    @missions << @mission.new([])
+  def current_leader
+    players[@leader_id]
+  end
+
+  def increment_leader
+    @leader_id = @leader_id + 1
+    if @leader_id >= players.size
+      @leader_id = 0
+    end
   end
 
   private

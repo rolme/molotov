@@ -1,6 +1,7 @@
 class Mission
-  attr_reader :mission_efforts, :require_to_fail, :number_of_players, :votes
-  def initialize(game, number_of_players, require_to_fail=1)
+  attr_reader :tasks, :require_to_fail, :number_of_operatives, :votes, :number_of_players
+  def initialize(number_of_operatives, number_of_players, require_to_fail=1)
+    @number_of_operatives = number_of_operatives
     @number_of_players = number_of_players
     @require_to_fail = require_to_fail
     @votes = []
@@ -19,31 +20,36 @@ class Mission
     @votes << vote
   end
 
-  def enough_votes?
-    votes.count >= game.players
+  def add_operative(operative)
+    @operatives << operative
   end
 
-  def status
-    return :planning if @operatives.count < number_of_players
+  def enough_votes?
+    votes.count >= number_of_players
+  end
+
+  def state
+    return :planning if @operatives.count < number_of_operatives
     return :voting if !enough_votes?
     return :aborted if vote_failed?
+    return :vote_passed unless mission_done?
     return :failed if is_mission_failed?
     return :success
   end
 
   def vote_failed?
-    votes.count { |vote| vote.value == false } > ( votes / 2 )
+    votes.count { |vote| vote.value == false } > ( votes.count / 2 )
   end
 
-  def add_effort(effort)
-    mission_efforts << effort
+  def add_task(task)
+    tasks << task
   end
 
   def mission_done?
-    mission_efforts.size >= number_of_players
+    tasks.size >= number_of_operatives
   end
 
   def is_mission_failed?
-    mission_efforts.count(&:failed?) >= require_to_fail
+    tasks.count(&:failed?) >= require_to_fail
   end
 end
