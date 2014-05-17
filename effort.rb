@@ -1,0 +1,3 @@
+class Effort
+
+end
