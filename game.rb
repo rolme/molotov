@@ -9,7 +9,6 @@ class Game
   def initialize(names = [])
     @teams = [Team.new("hello"), Team.new("world")]
     @mission_sizes = [2,3,3,4,3]
-    @mission_sizes = [2]
     @players = []
     @missions = []
     names.each do |name|
@@ -27,6 +26,7 @@ class Game
   end
 
   def state
+    puts current_mission_number
     return game_result if game_over?
     if current_mission.terminal_state?
       start_mission
@@ -60,11 +60,11 @@ class Game
 
   def current_mission_number
     #Fix to deal with status
-    missions.count(&:played?) + 1
+    missions.count(&:played?)
   end
 
   def mission_size
-    @mission_sizes[current_mission_number - 1]
+    @mission_sizes[current_mission_number]
   end
 
   def start_mission
@@ -107,7 +107,7 @@ class Game
   end
 
   def game_won?
-    @missions.count >= @mission_sizes.size
+    missions.count(&:played?) >= @mission_sizes.count
   end
 
   def game_failed?
